@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="Spinix.app" />
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
+  <!--
+    注意：DPI 感知不再在此 manifest 声明。WPF 应用在 .NET 9 默认启用
+    Per-Monitor V2 DPI 感知（由 WPF 应用程序框架自动设置 app.config 的
+    System.Windows.Forms.ApplicationConfigurationSection 不适用）。
+    在 manifest 中声明 dpiAwareness 会与 UseWindowsForms 引入的 WinForms
+    宿主产生 WFO0003 警告，故移除，改由项目属性管理。
+  -->
+
+  <!-- Windows 10/11 兼容性声明 -->
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" /> <!-- Windows 10/11 -->
+    </application>
+  </compatibility>
+</assembly>

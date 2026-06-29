@@ -1,0 +1,69 @@
+## .NET / Visual Studio / WPF 项目 .gitignore
+
+## 构建产物
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]r[Tt]ifacts/
+[Ww]ww[Rr]oot/
+[Bb]uild[Aa]rtifacts/
+
+## 发布输出
+[Pp]ublish/
+[Pp]ublish[Bb]aseline/
+[Pp]ublish[Oo]ptimized/
+*.publishsettings
+publish/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+
+## Visual Studio / Rider / VSCode
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.rsuser
+
+## 编译输出与临时
+*.dll
+*.pdb
+*.exe
+*.cache
+*.log
+texp/
+*.tmp
+*.bak
+*.swp
+
+## 测试结果
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+TestResults/
+coverage*
+*.coverage
+*.coveragexml
+
+## 操作系统文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+## 项目特定
+# 辅助工具目录（不参与主项目构建）
+_spinux_aux/

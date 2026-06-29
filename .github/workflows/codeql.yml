@@ -1,0 +1,52 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # 每周一 UTC 00:00 定期扫描，捕获依赖/规则更新
+    - cron: '0 0 * * 1'
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  analyze:
+    name: Analyze (C#)
+    runs-on: windows-latest
+    # CodeQL 上传结果需要 write 权限
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+          # queries: security-extended 启用扩展安全规则集，覆盖更多漏洞模式
+          # （P/Invoke、命令注入、不安全反序列化等本项目关心的安全敏感区域）
+          queries: security-extended, security-and-quality
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:csharp"

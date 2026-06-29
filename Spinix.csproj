@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- WPF 项目有大量自动生成/编译器生成的公共成员，CS1591 警告噪声大。
+         保留 GenerateDocumentationFile 输出 XML 文档（供 Intellisense/工具使用），
+         但抑制 CS1591（缺少文档注释的警告）。已为手写的公共 API 补充了文档。 -->
+    <NoWarn>CS1591</NoWarn>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>Spinix</RootNamespace>
+    <AssemblyName>Spinix</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <Company>Spinix</Company>
+    <Product>Spinix</Product>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!--
+    Release 自包含发布优化配置（仅影响 dotnet publish，不影响 Debug 开发）：
+      PublishSingleFile          —— 所有托管程序集合并进单个 exe
+      SelfContained              —— 内置 .NET 运行时，目标机无需安装运行时
+      IncludeNativeLibrariesForSelfExtract —— 原生库也打入单文件
+      EnableCompressionInSingleFile —— 压缩单文件内容，显著减小体积
+      RuntimeIdentifier          —— 默认 RID
+
+    关于裁剪（PublishTrimmed）——经实验验证不可用：
+      .NET 9 SDK 对 WPF 与 WinForms 均硬性禁止裁剪（NETSDK1168 / NETSDK1175），
+      这不是"敏感"风险而是 SDK target 阶段的 error 级阻止，NoWarn 也无法绕过。
+      实验基线：单文件+压缩无裁剪 = 71MB（已含完整 .NET 运行时 + WPF + WinForms）。
+      若未来 .NET 支持 WPF 裁剪，可在此追加 PublishTrimmed + TrimMode=partial。
+      详见 https://aka.ms/dotnet-illink/wpf
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <!--
+    WPF 与 WinForms 同时启用时，ImplicitUsings 会自动引入 System.Drawing 与
+    System.Windows.Forms，与 WPF 的 Point/Brush/Size/Application 等类型冲突。
+    这里全局移除它们，仅在真正需要（托盘、文件对话框）的文件中显式 using。
+  -->
+  <ItemGroup>
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
+
+  <!-- 允许单元测试项目访问 internal 类型（如 DpiHelper） -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Spinix.Tests" />
+  </ItemGroup>
+
+</Project>

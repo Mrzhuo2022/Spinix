@@ -1,0 +1,65 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════
+         白灰现代配色（简约明亮风格）
+         ═══════════════════════════════════════════════ -->
+
+    <!-- 基础背景 -->
+    <Color x:Key="WindowBgColor">#FFFFFF</Color>       <!-- 窗口主背景：纯白 -->
+    <Color x:Key="SurfaceColor">#F3F4F6</Color>        <!-- 卡片/面板：浅灰 -->
+    <Color x:Key="SurfaceHoverColor">#E5E7EB</Color>   <!-- 悬停态灰 -->
+
+    <!-- 强调色 -->
+    <Color x:Key="AccentColor">#2563EB</Color>         <!-- 主按钮/选中：蓝色 -->
+    <Color x:Key="AccentHoverColor">#1D4ED8</Color>    <!-- 主按钮悬停：深蓝 -->
+    <Color x:Key="DangerColor">#DC2626</Color>         <!-- 删除/危险：红色 -->
+    <Color x:Key="DangerHoverColor">#B91C1C</Color>
+
+    <!-- 文字 -->
+    <Color x:Key="TextPrimaryColor">#1F2937</Color>    <!-- 主要文字：近黑深灰 -->
+    <Color x:Key="TextSecondaryColor">#6B7280</Color>  <!-- 次要文字：中灰 -->
+    <Color x:Key="TextOnAccentColor">#FFFFFF</Color>   <!-- 蓝底上的白字 -->
+
+    <!-- 边框 -->
+    <Color x:Key="BorderColor">#D1D5DB</Color>         <!-- 普通边框：浅灰 -->
+    <Color x:Key="BorderFocusColor">#2563EB</Color>    <!-- 聚焦边框：蓝色 -->
+
+    <!-- 下拉/弹出 -->
+    <Color x:Key="PopupBgColor">#FFFFFF</Color>
+    <Color x:Key="PopupHoverColor">#F3F4F6</Color>
+    <Color x:Key="PopupSelectedColor">#DBEAFE</Color>  <!-- 选中项：淡蓝 -->
+
+    <!-- ── 画刷（控件直接引用）── -->
+
+    <SolidColorBrush x:Key="WindowBgBrush" Color="{StaticResource WindowBgColor}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="{StaticResource SurfaceHoverColor}"/>
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}"/>
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}"/>
+    <SolidColorBrush x:Key="DangerHoverBrush" Color="{StaticResource DangerHoverColor}"/>
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
+    <SolidColorBrush x:Key="TextOnAccentBrush" Color="{StaticResource TextOnAccentColor}"/>
+
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="BorderFocusBrush" Color="{StaticResource BorderFocusColor}"/>
+    <SolidColorBrush x:Key="PopupBgBrush" Color="{StaticResource PopupBgColor}"/>
+    <SolidColorBrush x:Key="PopupHoverBrush" Color="{StaticResource PopupHoverColor}"/>
+    <SolidColorBrush x:Key="PopupSelectedBrush" Color="{StaticResource PopupSelectedColor}"/>
+
+    <!-- ═══════════════════════════════════════════════
+         轮盘配色（保持深色——轮盘是叠加层，需要与任意桌面背景区分）
+         ═══════════════════════════════════════════════ -->
+    <SolidColorBrush x:Key="WheelBgBrush" Color="#0C0C14"/>
+    <SolidColorBrush x:Key="WheelBorderBrush" Color="#4A4A6A" Opacity="0.5"/>
+    <SolidColorBrush x:Key="SectorBrush" Color="#252535" Opacity="0.8"/>
+    <SolidColorBrush x:Key="SectorHoverBrush" Color="#4F46E5" Opacity="0.95"/>
+    <SolidColorBrush x:Key="SectorTextBrush" Color="#F3F4F6"/>
+    <SolidColorBrush x:Key="SectorIconBrush" Color="#9CA3AF"/>
+    <SolidColorBrush x:Key="DeadZoneBrush" Color="#111827" Opacity="0.7"/>
+    <SolidColorBrush x:Key="WheelControlGlowBrush" Color="#6366F1"/>
+</ResourceDictionary>

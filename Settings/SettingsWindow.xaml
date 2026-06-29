@@ -1,0 +1,340 @@
+<Window x:Class="Spinix.Settings.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:r="clr-namespace:Spinix.Resources"
+        Title="{DynamicResource SettingsTitle}"
+        Height="640" Width="880"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBgBrush}"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        ResizeMode="CanResize" MinWidth="760" MinHeight="560"
+        AutomationProperties.Name="{DynamicResource SettingsTitle}"
+        AutomationProperties.HelpText="{DynamicResource HelpSettingsWindow}"
+        KeyboardNavigation.TabNavigation="Cycle"
+        KeyboardNavigation.DirectionalNavigation="Cycle"
+        FocusManager.FocusedElement="{Binding ElementName=WheelTree}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部标题栏 -->
+        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" Padding="20,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="⬡" FontSize="22" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBlock Text="{DynamicResource SettingsTitle}" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"
+                           Text="{DynamicResource HeaderSubtitle}"/>
+            </Grid>
+        </Border>
+
+        <!-- 主体：左侧轮盘列表 + 右侧编辑 -->
+        <Grid Grid.Row="1" Margin="16,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左：轮盘与条目列表 -->
+            <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" CornerRadius="8">
+                <DockPanel Margin="12">
+                    <TextBlock DockPanel.Dock="Top" Style="{StaticResource HeaderLabel}" Text="{DynamicResource SectionItems}"/>
+                    <!-- 按钮工具栏：四列布局 [*, *, Auto, Auto]。
+                         左两列 * 让两个添加按钮平分剩余空间、彼此等宽且随面板收缩（永不溢出）；
+                         右两列 Auto 放固定窄宽的箭头按钮，彼此等宽。列间用 Margin 留间距。 -->
+                    <Grid DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="AddItemBtn" Style="{StaticResource SecondaryButton}" Content="{DynamicResource ButtonAddItem}" Click="AddItem_Click"
+                                HorizontalAlignment="Stretch" Padding="6,8" Margin="0,0,6,0"
+                                TabIndex="10"
+                                AutomationProperties.Name="{DynamicResource ButtonAddItem}"
+                                AutomationProperties.HelpText="{DynamicResource HelpAddItem}"/>
+                        <Button Grid.Column="1" x:Name="AddWheelBtn" Style="{StaticResource SecondaryButton}" Content="{DynamicResource ButtonAddWheel}" Click="AddWheel_Click"
+                                HorizontalAlignment="Stretch" Padding="6,8" Margin="0,0,12,0"
+                                TabIndex="11"
+                                AutomationProperties.Name="{DynamicResource ButtonAddWheel}"
+                                AutomationProperties.HelpText="{DynamicResource HelpAddWheel}"/>
+                        <Button Grid.Column="2" x:Name="MoveUpBtn" Style="{StaticResource SecondaryButton}" Content="↑" Width="32" Padding="0,8" Margin="0,0,6,0" Click="MoveUp_Click"
+                                TabIndex="12"
+                                AutomationProperties.Name="{DynamicResource HelpMoveUp}"
+                                AutomationProperties.HelpText="{DynamicResource HelpMoveUp}"/>
+                        <Button Grid.Column="3" x:Name="MoveDownBtn" Style="{StaticResource SecondaryButton}" Content="↓" Width="32" Padding="0,8" Click="MoveDown_Click"
+                                TabIndex="13"
+                                AutomationProperties.Name="{DynamicResource HelpMoveDown}"
+                                AutomationProperties.HelpText="{DynamicResource HelpMoveDown}"/>
+                    </Grid>
+                    <TreeView x:Name="WheelTree" Background="Transparent" BorderThickness="0"
+                              Foreground="{StaticResource TextPrimaryBrush}"
+                              SelectedItemChanged="WheelTree_SelectedItemChanged"
+                              MouseDoubleClick="WheelTree_MouseDoubleClick"
+                              TabIndex="1"
+                              AutomationProperties.Name="{DynamicResource HelpWheelTree}"
+                              AutomationProperties.HelpText="{DynamicResource HelpWheelTree}"/>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Background="Transparent" HorizontalAlignment="Stretch" Width="6"/>
+
+            <!-- 右：编辑面板 -->
+            <Border Grid.Column="2" Background="{StaticResource SurfaceBrush}" CornerRadius="8">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel x:Name="EditPanel" Margin="4">
+                        <!-- 占位提示 -->
+                        <TextBlock x:Name="EmptyHint" Text="{DynamicResource EmptyHint}"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Margin="0,40,0,0"/>
+
+                        <StackPanel x:Name="ItemEditor" Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource HeaderLabel}" Text="{DynamicResource LabelItemProperties}"/>
+
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelName}"/>
+                            <TextBox x:Name="ItemName" Style="{StaticResource TextBoxStyle}" TextChanged="ItemField_Changed"
+                                     TabIndex="20"
+                                     AutomationProperties.Name="{DynamicResource HelpItemName}"
+                                     AutomationProperties.HelpText="{DynamicResource HelpItemName}"/>
+
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelIcon}" Margin="0,10,0,4"/>
+                            <ComboBox x:Name="ItemIcon" Style="{StaticResource ComboBoxStyle}" SelectionChanged="ItemField_Changed"
+                                      TabIndex="21"
+                                      AutomationProperties.Name="{DynamicResource HelpItemIcon}"
+                                      AutomationProperties.HelpText="{DynamicResource HelpItemIcon}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Path Data="{Binding Icon}" Stretch="Uniform" Width="16" Height="16"
+                                                  Stroke="{StaticResource TextPrimaryBrush}" StrokeThickness="1.4"
+                                                  Margin="0,0,8,0" RenderTransformOrigin="0.5,0.5"/>
+                                            <TextBlock Text="{Binding Display}" VerticalAlignment="Center"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelActionType}" Margin="0,10,0,4"/>
+                            <ComboBox x:Name="ItemType" Style="{StaticResource ComboBoxStyle}" SelectionChanged="ItemType_Changed"
+                                      TabIndex="22"
+                                      AutomationProperties.Name="{DynamicResource HelpItemType}"
+                                      AutomationProperties.HelpText="{DynamicResource HelpItemType}"/>
+
+                            <!-- 参数输入区：根据动作类型动态切换 -->
+                            <StackPanel x:Name="ArgTextPanel" Margin="0,10,0,0">
+                                <TextBlock x:Name="ArgLabel" Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelTarget}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" x:Name="ItemArgument" Style="{StaticResource TextBoxStyle}" TextChanged="ItemField_Changed"
+                                             PreviewKeyDown="ItemArgument_PreviewKeyDown"
+                                             TabIndex="23"
+                                             AutomationProperties.Name="{DynamicResource LabelTarget}"/>
+                                    <Button Grid.Column="1" x:Name="BrowseBtn" Style="{StaticResource SecondaryButton}" Content="{DynamicResource ButtonBrowse}" Margin="6,0,0,0" Click="Browse_Click"/>
+                                </Grid>
+                                <TextBlock x:Name="ArgHint" Style="{StaticResource LabelStyle}" Margin="0,4,0,0" Text=""/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="ArgSystemPanel" Margin="0,10,0,0" Visibility="Collapsed">
+                                <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelSystemAction}"/>
+                                <ComboBox x:Name="ItemSystemAction" Style="{StaticResource ComboBoxStyle}" SelectionChanged="ItemSystemAction_Changed"
+                                          TabIndex="23"
+                                          AutomationProperties.Name="{DynamicResource HelpSystemAction}"
+                                          AutomationProperties.HelpText="{DynamicResource HelpSystemAction}"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="ArgSubWheelPanel" Margin="0,10,0,0" Visibility="Collapsed">
+                                <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelSubWheelTarget}"/>
+                                <ComboBox x:Name="ItemSubWheelTarget" Style="{StaticResource ComboBoxStyle}" SelectionChanged="ItemSubWheelTarget_Changed"
+                                          TabIndex="23"
+                                          AutomationProperties.Name="{DynamicResource HelpSubWheelTarget}"
+                                          AutomationProperties.HelpText="{DynamicResource HelpSubWheelTarget}"/>
+                                <TextBlock Style="{StaticResource LabelStyle}" Margin="0,4,0,0" Text="{DynamicResource HintSubWheelEnter}"/>
+                            </StackPanel>
+
+                            <TextBlock x:Name="LaunchArgsLabel" Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelLaunchArgs}" Margin="0,10,0,4"/>
+                            <TextBox x:Name="ItemArguments" Style="{StaticResource TextBoxStyle}" TextChanged="ItemField_Changed"
+                                     TabIndex="24"
+                                     AutomationProperties.Name="{DynamicResource LabelLaunchArgs}"/>
+
+                            <TextBlock x:Name="WorkDirLabel" Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelWorkDir}" Margin="0,10,0,4"/>
+                            <TextBox x:Name="ItemWorkDir" Style="{StaticResource TextBoxStyle}" TextChanged="ItemField_Changed"
+                                     TabIndex="25"
+                                     AutomationProperties.Name="{DynamicResource LabelWorkDir}"/>
+
+                            <CheckBox x:Name="ItemRunAsAdmin" Content="{DynamicResource ButtonRunAsAdmin}" Margin="0,12,0,0"
+                                      Foreground="{StaticResource TextPrimaryBrush}" Checked="ItemField_Changed" Unchecked="ItemField_Changed"
+                                      TabIndex="26"
+                                      AutomationProperties.Name="{DynamicResource ButtonRunAsAdmin}"
+                                      AutomationProperties.HelpText="{DynamicResource HelpRunAsAdmin}"/>
+
+                            <Button x:Name="DeleteItemBtn" Style="{StaticResource DangerButton}"
+                                    Content="{DynamicResource ButtonDeleteItem}" HorizontalAlignment="Left" Margin="0,20,0,0"
+                                    Click="DeleteItem_Click"
+                                    TabIndex="30"
+                                    AutomationProperties.Name="{DynamicResource ButtonDeleteItem}"
+                                    AutomationProperties.HelpText="{DynamicResource HelpDeleteItem}"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="WheelEditor" Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource HeaderLabel}" Text="{DynamicResource LabelWheelProperties}"/>
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelName}"/>
+                            <TextBox x:Name="WheelNameBox" Style="{StaticResource TextBoxStyle}" TextChanged="WheelField_Changed"
+                                     TabIndex="20"
+                                     AutomationProperties.Name="{DynamicResource LabelName}"/>
+                            <TextBlock Style="{StaticResource LabelStyle}" Text="{DynamicResource LabelWheelId}" Margin="0,10,0,4"/>
+                            <TextBox x:Name="WheelIdBox" Style="{StaticResource TextBoxStyle}" TextChanged="WheelField_Changed"
+                                     TabIndex="21"
+                                     AutomationProperties.Name="{DynamicResource LabelWheelId}"/>
+                            <Button x:Name="DeleteWheelBtn" Style="{StaticResource DangerButton}"
+                                    Content="{DynamicResource ButtonDeleteWheel}" HorizontalAlignment="Left" Margin="0,20,0,0"
+                                    Click="DeleteWheel_Click"
+                                    TabIndex="30"
+                                    AutomationProperties.Name="{DynamicResource ButtonDeleteWheel}"
+                                    AutomationProperties.HelpText="{DynamicResource HelpDeleteWheel}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- 底部：全局设置（分组卡片）+ 操作按钮 -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceBrush}" Padding="16,12"
+                AutomationProperties.Name="{DynamicResource SectionItems}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 卡片一：触发与语言 -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12,10">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource LabelGroupTriggerLang}" Style="{StaticResource HeaderLabel}" Margin="0,0,0,10"/>
+                            <WrapPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,18,6">
+                                    <TextBlock Text="{DynamicResource LabelTrigger}" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                                    <ComboBox x:Name="TriggerCombo" Width="118" Margin="8,0,0,0" Style="{StaticResource ComboBoxStyle}" SelectionChanged="Trigger_Changed"
+                                              TabIndex="40"
+                                              AutomationProperties.Name="{DynamicResource LabelTrigger}"
+                                              AutomationProperties.HelpText="{DynamicResource HelpTrigger}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="{DynamicResource LabelLanguage}" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                                    <ComboBox x:Name="LanguageCombo" Width="108" Margin="8,0,0,0" Style="{StaticResource ComboBoxStyle}" SelectionChanged="Language_Changed"
+                                              TabIndex="41"
+                                              AutomationProperties.Name="{DynamicResource LabelLanguage}"/>
+                                </StackPanel>
+                            </WrapPanel>
+                            <!-- 键盘触发录制区：仅当下拉选「键盘键…」时显示 -->
+                            <StackPanel x:Name="KbdTriggerPanel" Margin="0,8,0,0" Visibility="Collapsed">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" x:Name="KbdTriggerBox" Style="{StaticResource TextBoxStyle}" IsReadOnly="True"
+                                             PreviewKeyDown="KbdTriggerBox_PreviewKeyDown"
+                                             TabIndex="40"
+                                             AutomationProperties.Name="{DynamicResource LabelKbdTrigger}"
+                                             AutomationProperties.HelpText="{DynamicResource HintRecordTrigger}"/>
+                                    <Button Grid.Column="1" x:Name="RecordTriggerBtn" Style="{StaticResource SecondaryButton}" Content="{DynamicResource ButtonRecordTrigger}" Margin="6,0,0,0" Click="RecordTrigger_Click"
+                                            TabIndex="40"
+                                            AutomationProperties.Name="{DynamicResource ButtonRecordTrigger}"
+                                            AutomationProperties.HelpText="{DynamicResource HintRecordTrigger}"/>
+                                </Grid>
+                                <TextBlock Style="{StaticResource LabelStyle}" Margin="0,4,0,0" Text="{DynamicResource HintKbdTriggerTip}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 卡片二：轮盘与行为 -->
+                    <Border Grid.Column="2" Background="White" CornerRadius="8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12,10">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource LabelGroupWheelBehavior}" Style="{StaticResource HeaderLabel}" Margin="0,0,0,10"/>
+                            <WrapPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,18,6">
+                                    <TextBlock Text="{DynamicResource LabelWheelRadius}" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                                    <TextBox x:Name="RadiusBox" Width="56" Margin="8,0,0,0" Style="{StaticResource TextBoxStyle}" TextChanged="Global_Changed"
+                                             TabIndex="45"
+                                             AutomationProperties.Name="{DynamicResource LabelWheelRadius}"
+                                             AutomationProperties.HelpText="{DynamicResource HelpWheelRadius}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,18,6">
+                                    <TextBlock Text="{DynamicResource LabelEnterDelay}" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                                    <TextBox x:Name="SubWheelEnterDelayBox" Width="60" Margin="8,0,0,0" Style="{StaticResource TextBoxStyle}" TextChanged="Global_Changed"
+                                             ToolTip="按住触发键时悬停子轮盘扇区多久自动进入，范围 50-2000"
+                                             TabIndex="46"
+                                             AutomationProperties.Name="{DynamicResource LabelEnterDelay}"
+                                             AutomationProperties.HelpText="{DynamicResource HelpEnterDelay}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <TextBlock Text="{DynamicResource LabelRetreatDelay}" VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                                    <TextBox x:Name="SubWheelRetreatDelayBox" Width="60" Margin="8,0,0,0" Style="{StaticResource TextBoxStyle}" TextChanged="Global_Changed"
+                                             ToolTip="子轮盘内光标移回死区多久自动回退父轮盘，范围 50-2000"
+                                             TabIndex="47"
+                                             AutomationProperties.Name="{DynamicResource LabelRetreatDelay}"
+                                             AutomationProperties.HelpText="{DynamicResource HelpRetreatDelay}"/>
+                                </StackPanel>
+                            </WrapPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <CheckBox x:Name="AutoStartChk" Content="{DynamicResource CheckBoxAutoStart}" VerticalAlignment="Center"
+                                          Foreground="{StaticResource TextPrimaryBrush}" Checked="Global_Changed" Unchecked="Global_Changed"
+                                          TabIndex="42"
+                                          AutomationProperties.Name="{DynamicResource CheckBoxAutoStart}"/>
+                                <CheckBox x:Name="SuppressChk" Content="{DynamicResource CheckBoxSuppress}" Margin="18,0,0,0" VerticalAlignment="Center"
+                                          Foreground="{StaticResource TextPrimaryBrush}" Checked="Global_Changed" Unchecked="Global_Changed"
+                                          TabIndex="43"
+                                          AutomationProperties.Name="{DynamicResource CheckBoxSuppress}"
+                                          AutomationProperties.HelpText="{DynamicResource HelpSuppress}"/>
+                                <CheckBox x:Name="DisableFullScreenChk" Content="{DynamicResource CheckBoxDisableFullScreen}" Margin="18,0,0,0" VerticalAlignment="Center"
+                                          Foreground="{StaticResource TextPrimaryBrush}" Checked="Global_Changed" Unchecked="Global_Changed"
+                                          TabIndex="44"
+                                          AutomationProperties.Name="{DynamicResource CheckBoxDisableFullScreen}"
+                                          AutomationProperties.HelpText="{DynamicResource HelpDisableFullScreen}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- 操作按钮：单独一行，右对齐，与上方卡片拉开间距 -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                    <Button x:Name="ResetBtn" Style="{StaticResource SecondaryButton}" Content="{DynamicResource ButtonReset}" Margin="0,0,8,0" Click="Reset_Click"
+                            TabIndex="50"
+                            AutomationProperties.Name="{DynamicResource ButtonReset}"
+                            AutomationProperties.HelpText="{DynamicResource HelpReset}"/>
+                    <Button x:Name="SaveBtn" Style="{StaticResource PrimaryButton}" Content="{DynamicResource ButtonSave}" Click="Save_Click"
+                            TabIndex="51"
+                            AutomationProperties.Name="{DynamicResource ButtonSave}"
+                            AutomationProperties.HelpText="{DynamicResource HelpSave}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

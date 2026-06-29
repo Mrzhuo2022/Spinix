@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # 单项目仓库：csproj 在根目录，无 .sln，无测试项目
+  PROJECT: Spinix.csproj
+
+jobs:
+  # ───────── 构建验证（push / PR）─────────
+  build:
+    name: Build (Debug & Release)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT }}
+
+      - name: Build Debug
+        run: dotnet build ${{ env.PROJECT }} -c Debug --no-restore
+
+      - name: Build Release
+        run: dotnet build ${{ env.PROJECT }} -c Release --no-restore
+
+  # ───────── 发布单文件 exe 到 GitHub Release（仅 tag 触发）─────────
+  release:
+    name: Publish & Release
+    runs-on: windows-latest
+    # 仅在打 v* 标签时运行；不强依赖 build job（tag 通常从已验证的 main 打出）
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish self-contained single-file
+        # csproj 的 Release 配置已含：
+        #   PublishSingleFile + EnableCompressionInSingleFile
+        #   IncludeNativeLibrariesForSelfExtract（原生库打入单文件）
+        #   SelfContained + RuntimeIdentifier=win-x64
+        run: dotnet publish ${{ env.PROJECT }} -c Release -o publish
+
+      - name: Zip artifact
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          # 单文件 exe + README 一起打包，开箱即用
+          Compress-Archive -Path publish/Spinix.exe, README.md -DestinationPath "Spinix-${tag}-win-x64.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Spinix-*-win-x64.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
