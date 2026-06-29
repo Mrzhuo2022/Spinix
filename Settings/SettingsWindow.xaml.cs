@@ -202,7 +202,7 @@ public partial class SettingsWindow : Window
         {
             var wheelNode = new TreeViewItem
             {
-                Header = $"🛞 {wheel.Name}  ({wheel.Id})",
+                Header = BuildWheelHeader(wheel),
                 Tag = wheel,
                 IsExpanded = true,
             };
@@ -210,7 +210,7 @@ public partial class SettingsWindow : Window
             {
                 wheelNode.Items.Add(new TreeViewItem
                 {
-                    Header = $"  {GetIconGlyph(item.Icon)}  {item.Name}",
+                    Header = BuildItemHeader(item),
                     Tag = item,
                 });
             }
@@ -219,6 +219,32 @@ public partial class SettingsWindow : Window
     }
 
     private static string GetIconGlyph(string icon) => "◆";
+
+    private static string BuildWheelHeader(Wheel wheel) => $"🛞 {wheel.Name}  ({wheel.Id})";
+
+    private static string BuildItemHeader(WheelItem item) => $"  {GetIconGlyph(item.Icon)}  {item.Name}";
+
+    /// <summary>
+    /// 仅刷新树节点显示文字，不重建 TreeView 结构。
+    ///
+    /// 重要：编辑条目时若调用 RefreshTree()（清空+重建），会销毁当前选中节点、
+    /// 重建后 SelectedItem 变化触发 SelectedItemChanged → 刷新编辑面板 → 输入框焦点丢失。
+    /// 改为只原地更新 Header 文字，保持选中状态与焦点不变。
+    /// </summary>
+    private void RefreshTreeLabelOnly()
+    {
+        // 更新所有轮盘节点的 Header（名称/ID 可能变化）
+        foreach (TreeViewItem wheelNode in WheelTree.Items)
+        {
+            if (wheelNode.Tag is Wheel w)
+                wheelNode.Header = BuildWheelHeader(w);
+            foreach (TreeViewItem itemNode in wheelNode.Items)
+            {
+                if (itemNode.Tag is WheelItem it)
+                    itemNode.Header = BuildItemHeader(it);
+            }
+        }
+    }
 
     private void WheelTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
@@ -460,8 +486,6 @@ public partial class SettingsWindow : Window
             _selectedWheel.Id = string.IsNullOrWhiteSpace(WheelIdBox.Text) ? Guid.NewGuid().ToString("N") : WheelIdBox.Text;
         RefreshTreeLabelOnly();
     }
-
-    private void RefreshTreeLabelOnly() => RefreshTree();
 
     // ---- 全局字段 ----
     private void Global_Changed(object sender, RoutedEventArgs e)
