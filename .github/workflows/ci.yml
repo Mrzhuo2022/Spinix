@@ -27,8 +27,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore
-        run: dotnet restore ${{ env.PROJECT }}
+      - name: Restore (Debug)
+        # Debug 配置无 RID，单独 restore
+        run: dotnet restore ${{ env.PROJECT }} -p:Configuration=Debug
+
+      - name: Restore (Release)
+        # Release 配置带 RuntimeIdentifier=win-x64（csproj 中条件设置），
+        # 必须用相同配置+RID restore，否则 assets 缺 win-x64 目标 → NETSDK1047
+        run: dotnet restore ${{ env.PROJECT }} -p:Configuration=Release -r win-x64
 
       - name: Build Debug
         run: dotnet build ${{ env.PROJECT }} -c Debug --no-restore
