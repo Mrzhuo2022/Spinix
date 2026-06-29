@@ -197,6 +197,10 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
 
+    // 取窗口类名（用于识别桌面窗口 Progman/WorkerW，它们可能成为前台但非全屏应用）
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    public static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder lpClassName, int nMaxCount);
+
     [DllImport("user32.dll")]
     public static extern IntPtr GetDesktopWindow();
 
