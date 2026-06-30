@@ -244,8 +244,8 @@ GitHub Actions 配置在 `.github/workflows/`：
 
 ### 发版流程
 
-1. 从 `main` 分支打 tag：`git tag v1.0.0 && git push origin v1.0.0`
-2. CI 自动 publish 自包含单文件（约 71MB，内置 .NET 运行时），打包 `Spinix-v1.0.0-win-x64.zip`（含 exe + README）
+1. 从 `main` 分支打 tag：`git tag v0.1.0 && git push origin v0.1.0`
+2. CI 自动 publish 自包含单文件（约 71MB，内置 .NET 运行时），打包 `Spinix-v0.1.0-win-x64.zip`（含 exe + README）
 3. 自动创建 GitHub Release（含自动生成的更新日志）；tag 含 `-` 视为预发布
 
 ## 📋 技术栈

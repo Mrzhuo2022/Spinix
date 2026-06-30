@@ -26,7 +26,7 @@ public static class StringResources
         ["TrayTooltip"] = "Spinix",
         ["TrayOpenLog"] = "打开日志(&L)",
         ["TraySelfTest"] = "自检诊断(&D)",
-        ["AboutContent"] = "Spinix 1.0\nWindows 快捷轮盘\n\n按下鼠标侧键 X1 唤起轮盘。",
+        ["AboutContent"] = "Spinix 0.1.0\nWindows 快捷轮盘\n\n按住触发键（默认鼠标侧键 X1，可改为键盘键）唤起轮盘。",
 
         // 自检结果
         ["SelfTestTitle"] = "Spinix 自检诊断",
@@ -142,7 +142,7 @@ public static class StringResources
         ["TrayTooltip"] = "Spinix",
         ["TrayOpenLog"] = "Open &Log",
         ["TraySelfTest"] = "Self-&Test Diagnostics",
-        ["AboutContent"] = "Spinix 1.0\nWindows Shortcut Wheel\n\nHold mouse side button X1 to invoke the wheel.",
+        ["AboutContent"] = "Spinix 0.1.0\nWindows Shortcut Wheel\n\nHold the trigger key (mouse side button X1 by default, customizable to keyboard keys) to invoke the wheel.",
 
         // Self-test results
         ["SelfTestTitle"] = "Spinix Self-Test Diagnostics",
